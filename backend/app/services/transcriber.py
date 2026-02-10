@@ -48,6 +48,7 @@ class TranscriberService:
                 timestamp_granularities=["segment"],
             )
         logger.info(f"Transcription complete: {len(response.text)} characters")
+        logger.info(f"Transcription text: {response.text[:100]}...")
         return response.text
 
     async def _transcribe_chunked(self, audio_path: str) -> str:

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { Slot, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { Session } from '@supabase/supabase-js';
@@ -67,7 +67,18 @@ export default function RootLayout() {
   return (
     <PushTokenContext.Provider value={pushToken}>
       <StatusBar style="auto" />
-      <Slot />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="login" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="meeting/[id]"
+          options={{
+            headerShown: true,
+            headerBackTitle: 'Back',
+            title: 'Meeting Details',
+          }}
+        />
+      </Stack>
     </PushTokenContext.Provider>
   );
 }

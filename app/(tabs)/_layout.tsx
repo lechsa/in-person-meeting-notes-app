@@ -1,5 +1,7 @@
 import { Tabs } from 'expo-router';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+// @ts-ignore — @expo/vector-icons ships with Expo but lacks TS declarations
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { signOut } from '../../services/auth';
 
 export default function TabsLayout() {
@@ -18,12 +20,18 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="mic-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="meetings"
         options={{
           title: 'Meetings',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list-outline" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>

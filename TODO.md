@@ -127,14 +127,14 @@ Each phase ends with a testable milestone.
 
 > **Test:** Full flow on device: Record → stop → upload → backend processes → push notification arrives → tap notification → app opens to correct meeting detail with transcript and summary. Test in all 3 app states (foreground, background, killed).
 
-- [ ] Create `services/notifications.ts` — register for push notifications, get Expo Push Token
-- [ ] Implement foreground notification listener (in-app banner)
-- [ ] Implement notification response listener (tap → `router.push('/meeting/{id}')`)
-- [ ] Implement cold-start deep link handling via `Notifications.getLastNotificationResponseAsync()`
-- [ ] Create `hooks/useNotifications.ts` — notification setup hook
-- [ ] Set up notification listeners in `app/_layout.tsx`
-- [ ] Configure deep link scheme (`meetingnotes:///meeting/{meeting_id}`)
-- [ ] Wire up push token: pass token to backend when triggering `/process-meeting`
+- [x] Create `services/notifications.ts` — register for push notifications, get Expo Push Token
+- [x] Implement foreground notification listener (in-app banner)
+- [x] Implement notification response listener (tap → `router.push('/meeting/{id}')`)
+- [x] Implement cold-start deep link handling via `Notifications.getLastNotificationResponseAsync()`
+- [x] Create `hooks/useNotifications.ts` — notification setup hook
+- [x] Set up notification listeners in `app/_layout.tsx`
+- [x] Configure deep link scheme (`meetingnotes:///meeting/{meeting_id}`)
+- [x] Wire up push token: pass token to backend when triggering `/process-meeting`
 - [ ] End-to-end test: Record → upload → backend processes → notification received → tap → view transcript
 - [ ] Test notification tap → correct meeting (app foregrounded)
 - [ ] Test notification tap → correct meeting (app backgrounded)

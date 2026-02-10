@@ -7,13 +7,22 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 import { useMeetings } from '../../hooks/useMeetings';
 import { MeetingCard } from '../../components/MeetingCard';
 import type { Meeting } from '../../types';
 
 export default function MeetingsScreen() {
-  const { meetings, isLoading, isRefreshing, error, refresh } = useMeetings();
+  const { meetings, isLoading, isRefreshing, error, refresh, refetch } = useMeetings();
   const router = useRouter();
+
+  // Refresh meetings data every time the tab is focused
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const handleMeetingPress = (meeting: Meeting) => {
     router.push(`/meeting/${meeting.id}`);

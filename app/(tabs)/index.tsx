@@ -6,6 +6,7 @@ import { StatusBadge } from '../../components/StatusBadge';
 import { createMeeting, updateMeetingStatus } from '../../services/meetings';
 import { uploadAudio, getSignedUrl } from '../../services/upload';
 import { triggerProcessing } from '../../services/processing';
+import { usePushToken } from '../_layout';
 import type { Meeting } from '../../types';
 
 /**
@@ -35,6 +36,7 @@ export default function HomeScreen() {
     setStatus,
   } = useRecording();
 
+  const pushToken = usePushToken();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const meetingRef = useRef<Meeting | null>(null);
 
@@ -67,11 +69,11 @@ export default function HomeScreen() {
           });
           setStatus('processing');
 
-          // Trigger backend (fails gracefully until Phase 5)
+          // Trigger backend processing with push token
           await triggerProcessing({
             audio_url: audioUrl,
             meeting_id: meeting.id,
-            push_token: '', // Will be wired in Phase 6
+            push_token: pushToken,
           });
         } catch (uploadErr: any) {
           console.error('Upload/processing failed:', uploadErr);

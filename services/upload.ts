@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import {
   AUDIO_BUCKET,
   AUDIO_EXTENSION,
+  SUPABASE_URL,
   UPLOAD_MAX_RETRIES,
   UPLOAD_RETRY_BASE_DELAY_MS,
 } from '../lib/constants';
@@ -10,6 +11,9 @@ import {
 /**
  * Upload a local audio file to Supabase Storage.
  * Path: `{user_id}/{meeting_id}.m4a`
+ *
+ * Uses FileSystem.uploadAsync() to stream the file directly without
+ * loading the entire file into memory (avoids OOM on large recordings).
  *
  * Implements retry with exponential backoff (3 attempts: 2s, 4s, 8s).
  * Returns the storage path (not a signed URL).
@@ -19,38 +23,37 @@ export async function uploadAudio(
   meetingId: string
 ): Promise<string> {
   const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
-  if (userError || !user) throw new Error('Not authenticated');
+  if (sessionError || !session) throw new Error('Not authenticated');
 
-  const storagePath = `${user.id}/${meetingId}${AUDIO_EXTENSION}`;
+  const userId = session.user.id;
+  const storagePath = `${userId}/${meetingId}${AUDIO_EXTENSION}`;
 
-  // Read the file as base64
-  const base64 = await FileSystem.readAsStringAsync(fileUri, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
-
-  // Convert base64 to ArrayBuffer
-  const binaryString = atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
+  // Build the Supabase Storage REST API URL
+  const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${AUDIO_BUCKET}/${storagePath}`;
 
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < UPLOAD_MAX_RETRIES; attempt++) {
     try {
-      const { error } = await supabase.storage
-        .from(AUDIO_BUCKET)
-        .upload(storagePath, bytes.buffer, {
-          contentType: 'audio/mp4',
-          upsert: true,
-        });
+      const response = await FileSystem.uploadAsync(uploadUrl, fileUri, {
+        httpMethod: 'POST',
+        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'audio/mp4',
+          'x-upsert': 'true',
+        },
+      });
 
-      if (error) throw error;
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(
+          `Storage upload returned ${response.status}: ${response.body}`
+        );
+      }
 
       return storagePath;
     } catch (err: any) {

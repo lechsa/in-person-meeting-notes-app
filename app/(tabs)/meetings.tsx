@@ -1,10 +1,72 @@
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useMeetings } from '../../hooks/useMeetings';
+import { MeetingCard } from '../../components/MeetingCard';
+import type { Meeting } from '../../types';
 
 export default function MeetingsScreen() {
+  const { meetings, isLoading, isRefreshing, error, refresh } = useMeetings();
+  const router = useRouter();
+
+  const handleMeetingPress = (meeting: Meeting) => {
+    router.push(`/meeting/${meeting.id}`);
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>Failed to load meetings</Text>
+        <Text style={styles.errorDetail}>{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Meetings</Text>
-      <Text style={styles.subtitle}>No meetings yet</Text>
+      <FlatList
+        data={meetings}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <MeetingCard
+            meeting={item}
+            onPress={() => handleMeetingPress(item)}
+          />
+        )}
+        contentContainerStyle={
+          meetings.length === 0 ? styles.emptyContainer : styles.list
+        }
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Text style={styles.emptyEmoji}>📝</Text>
+            <Text style={styles.emptyTitle}>No meetings yet</Text>
+            <Text style={styles.emptySubtitle}>
+              Record your first meeting from the Home tab
+            </Text>
+          </View>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refresh}
+            tintColor="#007AFF"
+          />
+        }
+      />
     </View>
   );
 }
@@ -12,17 +74,51 @@ export default function MeetingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F2F2F7',
+  },
+  centered: {
+    flex: 1,
+    backgroundColor: '#F2F2F7',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 24,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  list: {
+    paddingVertical: 8,
+  },
+  emptyContainer: {
+    flex: 1,
+  },
+  empty: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+  },
+  emptyEmoji: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1C1C1E',
     marginBottom: 8,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
+  emptySubtitle: {
+    fontSize: 15,
+    color: '#8E8E93',
+    textAlign: 'center',
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FF3B30',
+    marginBottom: 8,
+  },
+  errorDetail: {
+    fontSize: 14,
+    color: '#8E8E93',
+    textAlign: 'center',
   },
 });

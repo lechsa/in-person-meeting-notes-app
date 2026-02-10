@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { StyleSheet, Text, View, Alert } from 'react-native';
 import { useRecording } from '../../hooks/useRecording';
 import { RecordButton } from '../../components/RecordButton';
 import { StatusBadge } from '../../components/StatusBadge';
+import { createMeeting, updateMeetingStatus } from '../../services/meetings';
+import { uploadAudio, getSignedUrl } from '../../services/upload';
+import { triggerProcessing } from '../../services/processing';
+import type { Meeting } from '../../types';
 
 /**
  * Format seconds into MM:SS or HH:MM:SS display.
@@ -28,9 +32,11 @@ export default function HomeScreen() {
     recordingUri,
     startRecording,
     stopRecording,
+    setStatus,
   } = useRecording();
 
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const meetingRef = useRef<Meeting | null>(null);
 
   const handlePress = async () => {
     if (isTransitioning) return;
@@ -38,11 +44,57 @@ export default function HomeScreen() {
 
     try {
       if (isRecording) {
+        // ─── Stop → Create meeting → Upload → Trigger processing ───
         const result = await stopRecording();
-        console.log('Recording saved:', result.uri, `(${result.duration}s)`);
-        // In Phase 4 this will trigger upload + processing
+
+        // Create meeting record
+        const meeting = meetingRef.current ?? (await createMeeting(result.duration));
+        meetingRef.current = null;
+
+        // Update duration
+        await updateMeetingStatus(meeting.id, 'uploading', {
+          duration: result.duration,
+        });
+        setStatus('uploading');
+
+        // Upload audio
+        try {
+          const storagePath = await uploadAudio(result.uri, meeting.id);
+          const audioUrl = await getSignedUrl(storagePath);
+
+          await updateMeetingStatus(meeting.id, 'processing', {
+            audio_url: storagePath,
+          });
+          setStatus('processing');
+
+          // Trigger backend (fails gracefully until Phase 5)
+          await triggerProcessing({
+            audio_url: audioUrl,
+            meeting_id: meeting.id,
+            push_token: '', // Will be wired in Phase 6
+          });
+        } catch (uploadErr: any) {
+          console.error('Upload/processing failed:', uploadErr);
+          await updateMeetingStatus(meeting.id, 'failed');
+          Alert.alert(
+            'Upload Failed',
+            uploadErr.message ?? 'Could not upload the recording.'
+          );
+        }
+
+        setStatus('idle');
       } else {
+        // ─── Start recording ───
         await startRecording();
+
+        // Create meeting record (status: recording)
+        try {
+          const meeting = await createMeeting();
+          meetingRef.current = meeting;
+        } catch (dbErr: any) {
+          console.warn('Could not create meeting record:', dbErr.message);
+          // Recording continues even if DB insert fails — we'll create on stop
+        }
       }
     } catch (error: any) {
       Alert.alert(

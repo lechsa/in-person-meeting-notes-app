@@ -79,16 +79,16 @@ Each phase ends with a testable milestone.
 
 > **Test:** Record → stop → audio uploads to Supabase Storage → meeting row created in DB → meeting appears in list with status badge → tap meeting → see detail screen (transcript shows "processing" state).
 
-- [ ] Create `services/meetings.ts` — CRUD operations (create, getAll, getById, updateStatus)
-- [ ] Create `services/upload.ts` — upload audio to Supabase Storage (`{user_id}/{meeting_id}.m4a`)
-- [ ] Implement upload retry with exponential backoff (3 attempts: 2s, 4s, 8s delays)
-- [ ] Create `services/processing.ts` — trigger backend `POST /process-meeting` (will fail gracefully until backend exists)
-- [ ] Create `hooks/useMeetings.ts` — meetings data fetching hook
-- [ ] Create `components/MeetingCard.tsx` — meeting list item (date, duration, status badge)
-- [ ] Create `components/TranscriptView.tsx` — scrollable transcript display
-- [ ] Update `app/(tabs)/meetings.tsx` — meetings list with pull-to-refresh, sorted by date desc
-- [ ] Create `app/meeting/[id].tsx` — meeting detail with transcript, summary, and loading/error states
-- [ ] Wire up full recording flow: Record → Stop → Create meeting → Upload → Update status
+- [x] Create `services/meetings.ts` — CRUD operations (create, getAll, getById, updateStatus)
+- [x] Create `services/upload.ts` — upload audio to Supabase Storage (`{user_id}/{meeting_id}.m4a`)
+- [x] Implement upload retry with exponential backoff (3 attempts: 2s, 4s, 8s delays)
+- [x] Create `services/processing.ts` — trigger backend `POST /process-meeting` (will fail gracefully until backend exists)
+- [x] Create `hooks/useMeetings.ts` — meetings data fetching hook
+- [x] Create `components/MeetingCard.tsx` — meeting list item (date, duration, status badge)
+- [x] Create `components/TranscriptView.tsx` — scrollable transcript display
+- [x] Update `app/(tabs)/meetings.tsx` — meetings list with pull-to-refresh, sorted by date desc
+- [x] Create `app/meeting/[id].tsx` — meeting detail with transcript, summary, and loading/error states
+- [x] Wire up full recording flow: Record → Stop → Create meeting → Upload → Update status
 - [ ] Verify: audio appears in Supabase Storage bucket
 - [ ] Verify: meeting row exists in DB with correct `audio_url` and `uploading`/`processing` status
 - [ ] Verify: meetings list shows the new meeting

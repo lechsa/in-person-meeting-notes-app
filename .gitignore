@@ -43,3 +43,8 @@ yarn-error.*
 
 .vscode/*
 !.vscode/settings.json
+
+# Python
+__pycache__/
+*.pyc
+backend/venv/

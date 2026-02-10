@@ -100,21 +100,21 @@ Each phase ends with a testable milestone.
 
 > **Test:** `curl POST /api/process-meeting` with a real audio URL from Supabase → meeting record in DB updated with transcript + summary + status `completed`. Verify with `GET /health` for basic connectivity.
 
-- [ ] Initialize backend project structure (`backend/app/`, `main.py`, `api/`, `services/`, `models/`, `config.py`)
-- [ ] Create `requirements.txt` (fastapi, uvicorn, httpx, openai, pydub, python-dotenv, supabase)
-- [ ] Create `.env.example` with required environment variables
-- [ ] Create `app/config.py` — environment configuration (SUPABASE_URL, SUPABASE_SERVICE_KEY, OPENAI_API_KEY)
-- [ ] Create `app/main.py` — FastAPI app with health endpoint
-- [ ] Create `app/models/schemas.py` — Pydantic models (ProcessMeetingRequest)
-- [ ] Create `app/services/storage.py` — StorageService: download audio from Supabase Storage to temp file
-- [ ] Create `app/services/transcriber.py` — TranscriberService: Whisper-1 transcription with chunking for files > 25 MB
-- [ ] Create `app/services/summarizer.py` — SummarizerService: generate summary from transcript (MVP: truncated)
-- [ ] Create `app/services/database.py` — DatabaseService: update meeting record with transcript + summary
-- [ ] Create `app/services/notifier.py` — NotifierService: send Expo push notification with deep link data
-- [ ] Create `app/api/routes.py` — `POST /api/process-meeting` endpoint orchestrating the 5-step pipeline
-- [ ] Implement error handling: set meeting status to `failed` on any pipeline step failure
-- [ ] Implement temp file cleanup in `finally` block
-- [ ] Create `Dockerfile` for backend deployment
+- [x] Initialize backend project structure (`backend/app/`, `main.py`, `api/`, `services/`, `models/`, `config.py`)
+- [x] Create `requirements.txt` (fastapi, uvicorn, httpx, openai, pydub, python-dotenv, supabase)
+- [x] Create `.env.example` with required environment variables
+- [x] Create `app/config.py` — environment configuration (SUPABASE_URL, SUPABASE_SERVICE_KEY, OPENAI_API_KEY)
+- [x] Create `app/main.py` — FastAPI app with health endpoint
+- [x] Create `app/models/schemas.py` — Pydantic models (ProcessMeetingRequest)
+- [x] Create `app/services/storage.py` — StorageService: download audio from Supabase Storage to temp file
+- [x] Create `app/services/transcriber.py` — TranscriberService: Whisper-1 transcription with chunking for files > 25 MB
+- [x] Create `app/services/summarizer.py` — SummarizerService: generate summary from transcript (MVP: truncated)
+- [x] Create `app/services/database.py` — DatabaseService: update meeting record with transcript + summary
+- [x] Create `app/services/notifier.py` — NotifierService: send Expo push notification with deep link data
+- [x] Create `app/api/routes.py` — `POST /api/process-meeting` endpoint orchestrating the 5-step pipeline
+- [x] Implement error handling: set meeting status to `failed` on any pipeline step failure
+- [x] Implement temp file cleanup in `finally` block
+- [x] Create `Dockerfile` for backend deployment
 - [ ] Test `GET /health` returns `{"status": "ok"}`
 - [ ] Test full pipeline with curl: upload test audio to Supabase → call `/api/process-meeting` → verify DB updated with transcript + summary
 - [ ] Test error case: invalid meeting_id → status set to `failed`

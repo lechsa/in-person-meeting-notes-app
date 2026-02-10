@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "in-person-meeting-notes-app",
+    "name": "Meeting Notes",
     "slug": "in-person-meeting-notes-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "meetingnotes",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -13,7 +14,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.meetingnotes.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +23,15 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.meetingnotes.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router",
+      "./plugins/withBackgroundAudio/app.plugin.js"
+    ]
   }
 }

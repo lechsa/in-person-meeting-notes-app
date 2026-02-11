@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "161923633866",
+    "project_id": "in-person-meeting-notes",
+    "storage_bucket": "in-person-meeting-notes.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:161923633866:android:f54ae8b590135c16ce9a33",
+        "android_client_info": {
+          "package_name": "com.lechsa.meetingnotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFmRtQehKfrS00aWbchVUR7JWu3Q4QXOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

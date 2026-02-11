@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.meetingnotes.app"
+      "bundleIdentifier": "com.lechsa.meetingnotes"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +24,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.meetingnotes.app"
+      "package": "com.lechsa.meetingnotes"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,6 +32,13 @@
     "plugins": [
       "expo-router",
       "./plugins/withBackgroundAudio/app.plugin.js"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b948f830-04f1-40c2-9bca-d86f53f495ba"
+      }
+    },
+    "owner": "lechsa"
   }
 }

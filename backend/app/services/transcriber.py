@@ -44,6 +44,7 @@ class TranscriberService:
             response = self.client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file,
+                language="en",
                 response_format="verbose_json",
                 timestamp_granularities=["segment"],
             )
@@ -85,6 +86,7 @@ class TranscriberService:
                     response = self.client.audio.transcriptions.create(
                         model="whisper-1",
                         file=chunk_file,
+                        language="en",
                         response_format="text",
                         prompt=previous_text[-224:] if previous_text else None,
                     )

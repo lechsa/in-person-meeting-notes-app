@@ -1,8 +1,16 @@
 import { Tabs } from 'expo-router';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 // @ts-ignore — @expo/vector-icons ships with Expo but lacks TS declarations
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { signOut } from '../../services/auth';
+
+const handleSignOut = async () => {
+  try {
+    await signOut();
+  } catch (error: any) {
+    Alert.alert('Sign Out Failed', error.message ?? 'Please try again.');
+  }
+};
 
 export default function TabsLayout() {
   return (
@@ -10,7 +18,7 @@ export default function TabsLayout() {
       screenOptions={{
         tabBarActiveTintColor: '#007AFF',
         headerRight: () => (
-          <TouchableOpacity style={styles.signOut} onPress={signOut}>
+          <TouchableOpacity style={styles.signOut} onPress={handleSignOut}>
             <Text style={styles.signOutText}>Sign Out</Text>
           </TouchableOpacity>
         ),

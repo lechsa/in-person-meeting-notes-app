@@ -61,15 +61,19 @@ export function useRecording() {
     const handleAppStateChange = async (nextState: AppStateStatus) => {
       if (!state.isRecording) return;
 
-      if (nextState === 'active') {
-        // App came back to foreground — sync duration from recorder state
-        const status = audioRecorder.getStatus();
-        if (status.isRecording) {
-          setState((prev) => ({
-            ...prev,
-            duration: Math.round((status.durationMillis ?? 0) / 1000),
-          }));
+      try {
+        if (nextState === 'active') {
+          // App came back to foreground — sync duration from recorder state
+          const status = audioRecorder.getStatus();
+          if (status.isRecording) {
+            setState((prev) => ({
+              ...prev,
+              duration: Math.round((status.durationMillis ?? 0) / 1000),
+            }));
+          }
         }
+      } catch (err) {
+        console.warn('Failed to sync recording status on app state change:', err);
       }
     };
 

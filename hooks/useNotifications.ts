@@ -31,12 +31,16 @@ export function useNotifications() {
     setupForegroundNotificationHandler();
 
     // Register for push notifications
-    registerForPushNotifications().then((token) => {
-      if (token) {
-        setPushToken(token);
-        console.log('Expo Push Token:', token);
-      }
-    });
+    registerForPushNotifications()
+      .then((token) => {
+        if (token) {
+          setPushToken(token);
+          console.log('Expo Push Token:', token);
+        }
+      })
+      .catch((err) => {
+        console.error('Push notification registration failed:', err);
+      });
 
     // Listen for notification taps (foreground + background → navigate)
     responseListenerRef.current = addNotificationResponseListener();
@@ -45,7 +49,9 @@ export function useNotifications() {
     foregroundListenerRef.current = addForegroundNotificationListener();
 
     // Handle cold-start: if app was opened by tapping a notification
-    handleInitialNotification();
+    handleInitialNotification().catch((err) => {
+      console.error('Failed to handle initial notification:', err);
+    });
 
     return () => {
       responseListenerRef.current?.remove();

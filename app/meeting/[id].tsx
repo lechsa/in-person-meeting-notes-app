@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { useMeeting } from '../../hooks/useMeetings';
 import { TranscriptView } from '../../components/TranscriptView';
@@ -19,7 +19,19 @@ function formatDuration(seconds: number | null): string {
 
 export default function MeetingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { meeting, isLoading, error } = useMeeting(id!);
+
+  if (!id) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Meeting' }} />
+        <View style={styles.centered}>
+          <Text style={styles.errorText}>Invalid meeting ID</Text>
+        </View>
+      </>
+    );
+  }
+
+  const { meeting, isLoading, error, refetch } = useMeeting(id);
 
   if (isLoading) {
     return (
@@ -40,6 +52,11 @@ export default function MeetingDetailScreen() {
           <Text style={styles.errorText}>
             {error ?? 'Meeting not found'}
           </Text>
+          {error && (
+            <TouchableOpacity style={styles.retryButton} onPress={refetch}>
+              <Text style={styles.retryText}>Retry</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </>
     );
@@ -115,5 +132,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FF3B30',
     textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 16,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

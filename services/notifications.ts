@@ -47,17 +47,26 @@ export async function registerForPushNotifications(): Promise<string> {
     });
   }
 
-  // Get Expo Push Token
-  try {
-    const projectId = Constants.expoConfig?.extra?.eas?.projectId;
-    const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId,
-    });
-    return tokenData.data;
-  } catch (error) {
-    console.error('Failed to get Expo Push Token:', error);
-    return '';
+  // Get Expo Push Token (with retry for network timing issues)
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+      const tokenData = await Notifications.getExpoPushTokenAsync({
+        projectId,
+      });
+      return tokenData.data;
+    } catch (error) {
+      console.warn(`Failed to get Expo Push Token (attempt ${attempt}/${maxRetries}):`, error);
+      if (attempt < maxRetries) {
+        await new Promise((r) => setTimeout(r, 2000 * attempt));
+      } else {
+        console.error('Exhausted retries for Expo Push Token');
+        return '';
+      }
+    }
   }
+  return '';
 }
 
 /**
@@ -67,7 +76,6 @@ export async function registerForPushNotifications(): Promise<string> {
 export function setupForegroundNotificationHandler(): void {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
-      shouldShowAlert: true,
       shouldShowBanner: true,
       shouldShowList: true,
       shouldPlaySound: true,

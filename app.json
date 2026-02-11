@@ -33,7 +33,13 @@
     "plugins": [
       "expo-router",
       "./plugins/withBackgroundAudio/app.plugin.js",
-      "@react-native-firebase/app"
+      "@react-native-firebase/app",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Meeting Notes to access your microphone for recording meetings."
+        }
+      ]
     ],
     "extra": {
       "router": {},

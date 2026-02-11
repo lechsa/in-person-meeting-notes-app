@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
+import { useAudioRecorder, useAudioRecorderState } from 'expo-audio';
 import type { RecordingState, RecordingStatus } from '../types';
 import {
-  startRecording as startAudioRecording,
-  stopRecording as stopAudioRecording,
-  getRecordingStatus,
+  configureAudioSession,
+  resetAudioSession,
+  ensureMicPermission,
+  RECORDING_OPTIONS,
 } from '../services/audio';
 
 /**
@@ -21,6 +23,9 @@ export function useRecording() {
     recordingUri: null,
     status: 'idle',
   });
+
+  const audioRecorder = useAudioRecorder(RECORDING_OPTIONS);
+  const recorderState = useAudioRecorderState(audioRecorder, 1000);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number | null>(null);
@@ -57,9 +62,9 @@ export function useRecording() {
       if (!state.isRecording) return;
 
       if (nextState === 'active') {
-        // App came back to foreground — sync duration from recording status
-        const status = await getRecordingStatus();
-        if (status?.isRecording) {
+        // App came back to foreground — sync duration from recorder state
+        const status = audioRecorder.getStatus();
+        if (status.isRecording) {
           setState((prev) => ({
             ...prev,
             duration: Math.round((status.durationMillis ?? 0) / 1000),
@@ -70,7 +75,7 @@ export function useRecording() {
 
     const sub = AppState.addEventListener('change', handleAppStateChange);
     return () => sub.remove();
-  }, [state.isRecording]);
+  }, [state.isRecording, audioRecorder]);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -83,7 +88,11 @@ export function useRecording() {
 
   const startRecording = useCallback(async () => {
     try {
-      await startAudioRecording();
+      await ensureMicPermission();
+      await configureAudioSession();
+
+      await audioRecorder.prepareToRecordAsync();
+      audioRecorder.record();
 
       setState({
         isRecording: true,
@@ -98,7 +107,7 @@ export function useRecording() {
       console.error('Failed to start recording:', error);
       throw error;
     }
-  }, [startTimer]);
+  }, [startTimer, audioRecorder]);
 
   const stopRecording = useCallback(async (): Promise<{
     uri: string;
@@ -107,7 +116,19 @@ export function useRecording() {
     try {
       stopTimer();
 
-      const result = await stopAudioRecording();
+      // Get duration before stopping
+      const status = audioRecorder.getStatus();
+      const durationSeconds = Math.round((status.durationMillis ?? 0) / 1000);
+
+      await audioRecorder.stop();
+      await resetAudioSession();
+
+      const uri = audioRecorder.uri;
+      if (!uri) {
+        throw new Error('Recording URI is null after stopping');
+      }
+
+      const result = { uri, duration: durationSeconds };
 
       setState({
         isRecording: false,
@@ -122,7 +143,7 @@ export function useRecording() {
       setState((prev) => ({ ...prev, isRecording: false, status: 'idle' }));
       throw error;
     }
-  }, [stopTimer]);
+  }, [stopTimer, audioRecorder]);
 
   const setStatus = useCallback((status: RecordingStatus) => {
     setState((prev) => ({ ...prev, status }));

@@ -34,8 +34,12 @@ class NotifierService:
             "priority": "high",
         }
 
+        logger.info(f"push_token: {push_token}")
+        logger.info(f"meeting_id: {meeting_id}")
+
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(self.EXPO_PUSH_URL, json=payload)
             response.raise_for_status()
 
+        logger.info(f"Notification response: {response.json()}")
         logger.info(f"Push notification sent for meeting {meeting_id}")

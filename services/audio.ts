@@ -1,5 +1,4 @@
 import {
-  AudioModule,
   RecordingPresets,
   setAudioModeAsync,
   requestRecordingPermissionsAsync,
@@ -67,14 +66,4 @@ export async function ensureMicPermission(): Promise<void> {
   if (!granted) {
     throw new Error('Microphone permission not granted');
   }
-}
-
-/**
- * Handle audio interruptions (phone calls, alarms, etc.)
- * Call this once at app init to register the handler.
- */
-export function setupInterruptionHandler(): void {
-  // expo-audio handles interruptions at the system level.
-  // App-state changes + recorder status polling in the hook
-  // serve as the interruption handling mechanism.
 }

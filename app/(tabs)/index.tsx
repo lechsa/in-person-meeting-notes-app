@@ -69,14 +69,18 @@ export default function HomeScreen() {
           });
           setStatus('processing');
 
-          // Trigger backend processing with push token
-          await triggerProcessing({
-            audio_url: audioUrl,
-            meeting_id: meeting.id,
-            push_token: pushToken,
-          });
+          try {
+            // backend handles status updates and error handling + push notification
+            await triggerProcessing({
+              audio_url: audioUrl,
+              meeting_id: meeting.id,
+              push_token: pushToken,
+            })
+          } catch (triggerProcessingErr: any) {
+            console.warn('Processing request failed:', triggerProcessingErr.message);
+          }
         } catch (uploadErr: any) {
-          console.error('Upload/processing failed:', uploadErr);
+          console.error('Upload failed:', uploadErr);
           await updateMeetingStatus(meeting.id, 'failed');
           Alert.alert(
             'Upload Failed',

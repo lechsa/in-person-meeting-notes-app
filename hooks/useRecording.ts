@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { useAudioRecorder, useAudioRecorderState } from 'expo-audio';
+import { useAudioRecorder } from 'expo-audio';
 import type { RecordingState, RecordingStatus } from '../types';
 import {
   configureAudioSession,
@@ -25,7 +25,6 @@ export function useRecording() {
   });
 
   const audioRecorder = useAudioRecorder(RECORDING_OPTIONS);
-  const recorderState = useAudioRecorderState(audioRecorder, 1000);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number | null>(null);

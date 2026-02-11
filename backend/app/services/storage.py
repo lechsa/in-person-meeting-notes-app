@@ -25,15 +25,28 @@ class StorageService:
 
         Returns:
             Local file path to the downloaded audio.
+
+        Raises:
+            RuntimeError: If the download or file write fails.
         """
         temp_path = f"/tmp/{uuid.uuid4()}.m4a"
 
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.get(audio_url)
-            response.raise_for_status()
+        try:
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                response = await client.get(audio_url)
+                response.raise_for_status()
 
-            with open(temp_path, "wb") as f:
-                f.write(response.content)
+                with open(temp_path, "wb") as f:
+                    f.write(response.content)
+        except httpx.TimeoutException:
+            logger.error(f"Timeout downloading audio from {audio_url}")
+            raise RuntimeError("Audio download timed out")
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP {e.response.status_code} downloading audio: {e}")
+            raise RuntimeError(f"Audio download failed with HTTP {e.response.status_code}") from e
+        except OSError as e:
+            logger.error(f"Failed to write audio to {temp_path}: {e}")
+            raise RuntimeError(f"Failed to write audio file to disk: {e}") from e
 
         file_size_mb = os.path.getsize(temp_path) / (1024 * 1024)
         logger.info(f"Downloaded audio to {temp_path} ({file_size_mb:.1f} MB)")

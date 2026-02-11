@@ -22,16 +22,20 @@ class DatabaseService:
         status: str = "completed",
     ) -> None:
         """Update meeting record with transcript, summary, and status."""
-        self.client.table("meetings").update(
-            {
-                "transcript": transcript,
-                "summary": summary,
-                "status": status,
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-            }
-        ).eq("id", meeting_id).execute()
+        try:
+            self.client.table("meetings").update(
+                {
+                    "transcript": transcript,
+                    "summary": summary,
+                    "status": status,
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }
+            ).eq("id", meeting_id).execute()
 
-        logger.info(f"Meeting {meeting_id} updated → status={status}")
+            logger.info(f"Meeting {meeting_id} updated → status={status}")
+        except Exception as e:
+            logger.error(f"Failed to update meeting {meeting_id}: {e}")
+            raise RuntimeError(f"Database update failed for meeting {meeting_id}") from e
 
     async def update_meeting_status(
         self,
@@ -39,11 +43,15 @@ class DatabaseService:
         status: str,
     ) -> None:
         """Update only the status field of a meeting record."""
-        self.client.table("meetings").update(
-            {
-                "status": status,
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-            }
-        ).eq("id", meeting_id).execute()
+        try:
+            self.client.table("meetings").update(
+                {
+                    "status": status,
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }
+            ).eq("id", meeting_id).execute()
 
-        logger.info(f"Meeting {meeting_id} status → {status}")
+            logger.info(f"Meeting {meeting_id} status → {status}")
+        except Exception as e:
+            logger.error(f"Failed to update meeting {meeting_id} status to '{status}': {e}")
+            raise RuntimeError(f"Database status update failed for meeting {meeting_id}") from e

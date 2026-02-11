@@ -59,16 +59,21 @@ async def process_meeting(request: ProcessMeetingRequest):
         logger.info(f"[{meeting_id}] Processing complete!")
         return ProcessMeetingResponse(status="completed", meeting_id=meeting_id)
 
+    except HTTPException:
+        raise
     except Exception as e:
-        # Mark meeting as failed so the user sees the error state
-        logger.error(f"[{meeting_id}] Processing failed: {e}")
+        error_type = type(e).__name__
+        logger.error(f"[{meeting_id}] Processing failed ({error_type}): {e}", exc_info=True)
         try:
             await database_service.update_meeting_status(meeting_id, "failed")
         except Exception as db_err:
             logger.error(
                 f"[{meeting_id}] Failed to update status to 'failed': {db_err}"
             )
-        raise HTTPException(status_code=500, detail="Processing failed")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Processing failed: {error_type}",
+        )
 
     finally:
         # Clean up temp audio file

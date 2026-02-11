@@ -40,17 +40,21 @@ class TranscriberService:
 
     async def _transcribe_single(self, audio_path: str) -> str:
         """Transcribe a single audio file (<= 25 MB)."""
-        with open(audio_path, "rb") as audio_file:
-            response = self.client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                language="en",
-                response_format="verbose_json",
-                timestamp_granularities=["segment"],
-            )
-        logger.info(f"Transcription complete: {len(response.text)} characters")
-        logger.info(f"Transcription text: {response.text[:100]}...")
-        return response.text
+        try:
+            with open(audio_path, "rb") as audio_file:
+                response = self.client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio_file,
+                    language="en",
+                    response_format="verbose_json",
+                    timestamp_granularities=["segment"],
+                )
+            logger.info(f"Transcription complete: {len(response.text)} characters")
+            logger.info(f"Transcription text: {response.text[:100]}...")
+            return response.text
+        except Exception as e:
+            logger.error(f"OpenAI transcription failed for {audio_path}: {e}")
+            raise RuntimeError(f"Transcription failed: {e}") from e
 
     async def _transcribe_chunked(self, audio_path: str) -> str:
         """
@@ -94,6 +98,13 @@ class TranscriberService:
                 transcripts.append(response)
                 previous_text = response
                 logger.info(f"Chunk {i + 1}/{num_chunks} transcribed")
+            except Exception as e:
+                logger.error(
+                    f"OpenAI transcription failed on chunk {i + 1}/{num_chunks}: {e}"
+                )
+                raise RuntimeError(
+                    f"Transcription failed on chunk {i + 1}/{num_chunks}: {e}"
+                ) from e
             finally:
                 if os.path.exists(chunk_path):
                     os.remove(chunk_path)

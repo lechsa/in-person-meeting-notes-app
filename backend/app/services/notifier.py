@@ -37,9 +37,19 @@ class NotifierService:
         logger.info(f"push_token: {push_token}")
         logger.info(f"meeting_id: {meeting_id}")
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(self.EXPO_PUSH_URL, json=payload)
-            response.raise_for_status()
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(self.EXPO_PUSH_URL, json=payload)
+                response.raise_for_status()
 
-        logger.info(f"Notification response: {response.json()}")
-        logger.info(f"Push notification sent for meeting {meeting_id}")
+            logger.info(f"Notification response: {response.json()}")
+            logger.info(f"Push notification sent for meeting {meeting_id}")
+        except httpx.TimeoutException:
+            logger.warning(f"Push notification timed out for meeting {meeting_id}")
+        except httpx.HTTPStatusError as e:
+            logger.warning(
+                f"Push notification failed for meeting {meeting_id}: "
+                f"HTTP {e.response.status_code}"
+            )
+        except Exception as e:
+            logger.warning(f"Push notification failed for meeting {meeting_id}: {e}")

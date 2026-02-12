@@ -31,9 +31,8 @@ cd in-person-meeting-notes-app
 
 #### Frontend (Expo)
 
-Create a `.env` file in the project root:
-
-`.env` values is shared via email
+Create a `.env` file in the project root, you can copy `.env.example`
+`.env` values for frontend is shared via email
 
 ```env
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
@@ -45,8 +44,8 @@ EXPO_PUBLIC_BACKEND_URL=http://<your-local-ip>:8000
 
 #### Backend
 
-Create a `.env` file inside the `backend/` directory:
-`.env` values is shared via email
+Create a `.env` file inside the `backend/` directory, you can copy `.env.example`
+`.env` values for backend is shared via email
 
 ```env
 SUPABASE_URL=https://your-project.supabase.co

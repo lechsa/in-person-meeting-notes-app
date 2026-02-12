@@ -2,11 +2,6 @@
 
 ## In-Person Meeting Notes App
 
-**Version:** 1.0  
-**Date:** February 10, 2026  
-**Status:** Draft  
-**Based on:** PRD v1.0
-
 ---
 
 ## Table of Contents

@@ -340,7 +340,7 @@ interface UploadService {
 ```
 
 **Implementation details:**
-- Reads file from local filesystem using `expo-file-system`
+- Uses `FileSystem.uploadAsync()` from `expo-file-system` to stream the file directly to Supabase Storage without loading the entire file into memory (avoids OOM on large recordings)
 - Uploads to Supabase Storage bucket `meeting-audio` with path `{user_id}/{meeting_id}.m4a`
 - Returns signed URL for backend access
 - Implements retry with exponential backoff (max 3 attempts)

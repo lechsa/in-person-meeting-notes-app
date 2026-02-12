@@ -1,6 +1,4 @@
-# Software Design Document (SDD)
-
-## In-Person Meeting Notes App
+# Software Design Document (SDD) for In-Person Meeting Notes App
 
 ---
 

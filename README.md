@@ -15,8 +15,8 @@ A mobile app for recording in-person meetings, transcribing audio, and generatin
   ```
 - **Xcode** (for iOS) — install from the Mac App Store
 - **Android Studio** (for Android) — with an emulator or a physical device with [USB debugging enabled](https://developer.android.com/studio/debug/dev-options)
-- A **Supabase** project — [create one here](https://supabase.com)
-- An **OpenAI** API key — [get one here](https://platform.openai.com/api-keys)
+- A **Supabase** project — We already created one for testing, shared via email.
+- An **OpenAI** API key — We already created one for testing, shared via email.
 
 ---
 

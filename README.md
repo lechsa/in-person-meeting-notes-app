@@ -1,4 +1,4 @@
-# Meeting Notes App
+# In Person Meeting Notes App
 
 A mobile app for recording in-person meetings, transcribing audio, and generating summaries. Built with Expo (React Native) and a FastAPI backend.
 

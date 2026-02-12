@@ -157,7 +157,7 @@ To run on a physical Android device:
 
 ## Architecture Decisions
 
-> For the full technical design, see the [Software Design Document (SDD)](SDD.md).
+For the full technical design, see the [Software Design Document (SDD)](SDD.md).
 
 ### System Flow
 

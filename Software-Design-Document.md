@@ -112,6 +112,75 @@ The system consists of three primary components:
                                      └─────────────────────┘
 ```
 
+### System Flow
+
+```mermaid
+flowchart TB
+    subgraph Mobile["📱 Mobile App (Expo SDK 54)"]
+        UI[Screens & Components]
+        Services[Service Layer]
+        Audio[Audio Recording]
+        UI --> Services
+        Services --> Audio
+    end
+
+    subgraph Supabase["☁️ Supabase"]
+        Auth[Auth]
+        DB[(Postgres + RLS)]
+        Storage[Storage Bucket]
+    end
+
+    subgraph Backend["⚙️ Python Backend (FastAPI)"]
+        API[API Routes]
+        Transcriber[Transcriber - Whisper-1]
+        Summarizer[Summarizer - GPT]
+        Notifier[Notifier]
+        API --> Transcriber --> Summarizer --> Notifier
+    end
+
+    Push["📬 Expo Push Service"]
+
+    Audio -- "1. Upload .m4a" --> Storage
+    Services -- "2. Auth & CRUD" --> Auth
+    Services -- "2. Read/Write meetings" --> DB
+    Services -- "3. POST /process-meeting" --> API
+    API -- "4. Download audio" --> Storage
+    API -- "5. Update transcript & summary" --> DB
+    Notifier -- "6. Send push" --> Push
+    Push -- "7. Notification + deep link" --> Mobile
+```
+
+### Recording & Processing Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant App as Mobile App
+    participant SB as Supabase
+    participant BE as Backend
+    participant PN as Push Notification
+
+    U->>App: Tap Record
+    App->>SB: INSERT meeting (status: recording)
+    App->>App: Start background recording
+
+    U->>App: Tap Stop
+    App->>App: Stop recording
+    App->>SB: Upload audio to Storage
+    App->>SB: UPDATE meeting (status: uploading)
+    App->>BE: POST /process-meeting
+
+    BE->>SB: Download audio
+    BE->>BE: Transcribe (Whisper-1)
+    BE->>BE: Summarize (GPT)
+    BE->>SB: UPDATE meeting (status: completed)
+    BE->>PN: Send notification
+    PN->>U: "Your meeting is ready"
+    U->>App: Tap notification
+    App->>SB: GET meeting by ID
+    App->>U: Show transcript & summary
+```
+
 ### 3.2 Design Principles
 
 - **Separation of Concerns** — Each layer has a single responsibility; screens don't contain business logic

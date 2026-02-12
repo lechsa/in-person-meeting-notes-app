@@ -2,6 +2,10 @@
 
 A mobile app for recording in-person meetings, transcribing audio, and generating summaries. Built with Expo (React Native) and a FastAPI backend.
 
+## Screen Recordings
+- [Android Screen Recording Video](https://drive.google.com/file/d/1OygUqG24X4TWV1U2wVheJAeHl9Imfgyg/view)
+- [iOS Screen Recording Video](https://drive.google.com/file/d/1JjSgzkllVnSgRYeUuYGID6tIucr5zqcy/view)
+
 ## How to Run Locally
 
 ### Prerequisites
@@ -169,7 +173,7 @@ Areas we'd improve given more time:
 
 ### Scalability & Reliability
 
-- **Message queue for processing** — Use Kafka or RabbitMQ to handle audio processing, transcription, summarization, and push notifications asynchronously. This improves scalability and enables automated retries for failed processes.
+- **Message queue for processing** — Use Kafka or RabbitMQ to handle audio processing, transcription, summarization, and push notifications. This improves scalability, lessen the load on backend, stream the process to consumers, and enables automated retries for failed processes.
 - **Load balancing** — Run multiple backend instances behind a load balancer for horizontal scaling.
 - **Proper logging & monitoring** — Integrate tools like Sentry for error tracking, structured logging, and alerting.
 - **Offline-resilient upload queue** — Persist failed uploads locally on the device and automatically retry when connectivity returns.

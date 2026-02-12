@@ -173,4 +173,5 @@ Areas we'd improve given more time:
 - **Load balancing** — Run multiple backend instances behind a load balancer for horizontal scaling.
 - **Proper logging & monitoring** — Integrate tools like Sentry for error tracking, structured logging, and alerting.
 - **Offline-resilient upload queue** — Persist failed uploads locally on the device and automatically retry when connectivity returns.
+- **Summarizer** - Using advanced or better LLM and Machine Learning to get better summary result from the transcript. 
 - **Virtualized meeting list** — Use `FlashList` or similar for virtualized rendering, add load-more pagination, and implement search/filtering.

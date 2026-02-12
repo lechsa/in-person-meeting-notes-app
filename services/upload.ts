@@ -80,7 +80,7 @@ export async function uploadAudio(
  */
 export async function getSignedUrl(
   storagePath: string,
-  expiresInSeconds = 3600
+  expiresInSeconds = 86400 // 24 hours
 ): Promise<string> {
   const { data, error } = await supabase.storage
     .from(AUDIO_BUCKET)

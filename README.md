@@ -6,6 +6,12 @@ A mobile app for recording in-person meetings, transcribing audio, and generatin
 - [Android Screen Recording Video](https://drive.google.com/file/d/1OygUqG24X4TWV1U2wVheJAeHl9Imfgyg/view)
 - [iOS Screen Recording Video](https://drive.google.com/file/d/1JjSgzkllVnSgRYeUuYGID6tIucr5zqcy/view)
 
+## Test User Account
+email: test@test.com
+password: test123
+
+If you want to create a new account, you will need to check your email to confirm your email before sign in. Please check your spam email from Supabase. 
+
 ## How to Run Locally
 
 ### Prerequisites

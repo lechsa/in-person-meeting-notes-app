@@ -67,16 +67,37 @@ OPEN_AI_API_KEY=your-openai-api-key
 
 ### 3. Set Up Supabase
 
-Note: You don't need this, if you connect to existing Supabase that has been created and shared via email
-After creating your Supabase project, run the migration to set up the database schema, RLS policies, and storage bucket. Open the **SQL Editor** in your [Supabase Dashboard](https://supabase.com/dashboard) and paste the contents of:
+> **Note:** You don't need this if you connect to the existing Supabase project that has been created and shared via email.
 
-```
-supabase/migrations/20260212000000_create_meetings_and_rls.sql
+After creating your Supabase project, set up the database using the Supabase CLI:
+
+#### a. Log in to Supabase
+
+```bash
+npx supabase login
 ```
 
-This creates:
+This opens your browser to generate an access token. Paste it back into the terminal.
+
+#### b. Link to your Supabase project
+
+```bash
+npx supabase link --project-ref <your-project-ref>
+```
+
+You can find your project ref in your [Supabase Dashboard](https://supabase.com/dashboard) under **Project Settings → General**. It will prompt you for your database password.
+
+#### c. Run migrations
+
+```bash
+npx supabase db push
+```
+
+This applies all migrations in `supabase/migrations/` to your remote database, creating:
 - The `meetings` table with RLS policies (users can only access their own data)
 - The `meeting-audio` storage bucket with upload/read policies
+
+**Alternative (manual):** You can also open the **SQL Editor** in your Supabase Dashboard and paste the contents of `supabase/migrations/20260212000000_create_meetings_and_rls.sql` directly.
 
 ### 4. Install Dependencies
 
